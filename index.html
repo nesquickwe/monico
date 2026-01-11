@@ -1,0 +1,1503 @@
+<!DOCTYPE html><html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="styles.css" /> --> <!-- Removed external stylesheet link -->
+    <style type="text/css">
+        /* --- Theme 1 (Default) Styles --- */
+        html,
+        body {
+            /* PrimaryBackground */
+            background: #131219;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: consolas, "poppins", monospace;
+            /* Foreground */
+            color: #767676;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+      #container {
+        transition: opacity 0.15s ease-out;
+        will-change: opacity;
+      }
+      .controls {
+        background-color: #00000000;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 5px;
+        z-index: 1000;
+      }
+      .controls button {
+        background-color: #00000000;
+        border: none;
+        border-radius: 5px;
+        padding: 0;
+        height: 40px;
+        width: 40px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .controls button svg {
+        fill: #dddddd;
+        transition: fill 0.2s ease;
+        width: 22px;
+        height: 22px;
+      }
+      #attach-btn svg {
+        transform: scale(1.2);
+      }
+      .controls button svg:hover {
+        fill: #999999;
+        transition: fill 0.2s ease;
+      }
+      .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+        clip-path: inset(0 0 0 0 round 5px);
+      }
+      @keyframes ripple-animation {
+        to {
+          transform: scale(2.5);
+          opacity: 0;
+        }
+      }
+      .toast-container {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        z-index: 9999;
+      }
+      .toast {
+        padding: 12px 16px;
+        margin: 8px;
+        border-radius: 6px;
+        color: white;
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        opacity: 0;
+        transform: translateX(50px);
+        filter: blur(8px);
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        position: relative;
+        max-width: 180px; 
+        width: fit-content; 
+        white-space: normal; 
+        max-height: 100px;
+      }
+      .toast.error::before {
+        content: "";
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .toast.success::before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+      }
+
+      .toast.success {
+        background-color: rgba(34, 197, 94, 0.9);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+      }
+      .toast.error {
+        background-color: rgba(239, 68, 68, 0.9);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+        filter: blur(0);
+      }
+      .toast.hide {
+        opacity: 0;
+        transform: translateX(50px);
+        filter: blur(8px);
+      }
+
+      .toast .toast-title {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+
+      .toast .toast-code {
+        background: rgba(0,0,0,0.3);
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px;
+        padding: 6px 8px;
+        white-space: pre;     
+        overflow-x: auto;      
+        max-height: 160px;      
+        overflow-y: auto;     
+      }
+
+      .margin:first-child {
+        background-image: var(--url);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+      .lines-content:nth-of-type(1),
+      .monaco-editor-background:nth-of-type(1) {
+        background-image: var(--url);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+      #main-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+      }
+        
+        #tab-bar {
+            /* CardGradient */
+            background: linear-gradient(to bottom, #1A1821 0%, #17161D 100%);
+            height: 40px;
+            min-height: 40px;
+            max-height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            gap: 3px;
+            font-family: "Inter", sans-serif;
+            font-weight: 500;
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            /* Border */
+            border-bottom: 1px solid #332C40;
+            transition: background 0.2s ease, border-bottom 0.2s ease;
+        }
+        .tab {
+            height: 29px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px 0 10px;
+            /* Foreground */
+            color: #767676;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            min-width: 112px;
+            max-width: 112px;
+            user-select: none;
+            font-size: 13px;
+            border-radius: 4px;
+            margin-right: 4px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            justify-content: space-between;
+            transition: transform 0.25s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.25s ease-out, background-color 0.2s ease;
+            will-change: transform, opacity;
+            /* Transparent to show gradient */
+            background: transparent;
+            border: 1px solid transparent;
+        }
+        .tab svg {
+            width: 14px;
+            height: 15px;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+        .tab svg path {
+             /* Foreground */
+            stroke: #686868; /* Slightly darker than main foreground */
+            transition: stroke 0.2s ease;
+        }
+        .tab.active svg path {
+             /* Lighter foreground for active */
+            stroke: #b4b4b4;
+        }
+        .tab.active {
+            /* PrimaryBackground */
+            background: #131219;
+             /* Lighter foreground for active */
+            color: #b4b4b4;
+            z-index: 1;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0.3);
+            /* Border */
+            border: 1px solid #332C40;
+        }
+
+      .tab-close {
+        opacity: 0.125;
+        margin-left: 8px;
+        margin-bottom: 2px;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0s ease;
+         /* Foreground */
+        color: #767676;
+        font-size: 20px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .tab:hover .tab-close {
+        opacity: 1;
+      }
+        .tab-close:hover {
+            color: #767676;
+        }
+      .tab-close::before {
+        content: "×";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        line-height: 0;
+      }
+      #new-tab-btn {
+        background: transparent;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+         /* Foreground */
+        color: #767676;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 20px;
+        border-radius: 4px;
+        border: none;
+        margin-bottom: 2px;
+      }
+      #new-tab-btn:hover {
+         /* Lighter foreground */
+        color: #b4b4b4;
+      }
+      .context-menu {
+        background: #00000000;
+        border: 1px solid #65645f;
+        border-radius: 6px;
+        padding: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        min-width: 120px;
+        animation: fadeIn 0.15s ease-out;
+      }
+      .menu-item {
+        padding: 8px 12px;
+        color: #767676;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 13px;
+        font-family: "Poppins", sans-serif;
+        transition: all 0.2s ease;
+      }
+      .menu-item:hover {
+        background: #1f1f1f;
+        color: #65645f;
+      }
+      @keyframes tabActivateAnimation {
+        from {
+          transform: scaleX(0);
+        }
+        to {
+          transform: scaleX(1);
+        }
+      }
+      .tab-close-animate {
+        animation: tabClose 0.25s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+      }
+      @keyframes tabClose {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+      }
+      .tab-enter-animate {
+        animation: tabEnter 0.25s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+      }
+      @keyframes tabEnter {
+        0% {
+          transform: scale(0.95);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .tab-move-transition {
+        transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+      }
+      .tab-entering {
+        animation: tabEnterAnimation 0.15s ease-out;
+      }
+      @keyframes tabEnterAnimation {
+        from {
+          transform: translateY(8px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .tab-leaving {
+        animation: tabLeaveAnimation 0.15s ease-in;
+      }
+      @keyframes tabLeaveAnimation {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(-20px);
+          opacity: 0;
+        }
+      }
+      @keyframes tabSlideRight {
+        from {
+          transform: translateX(-20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes tabSlideLeft {
+        from {
+          transform: translateX(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes tabSlideDown {
+        from {
+          transform: translateY(-10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .tab {
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.3s ease, background-color 0.2s ease;
+      }
+      .tab.moving {
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.3s ease;
+        z-index: 10;
+        pointer-events: none;
+      }
+      .tab-slide-right {
+        animation: tabSlideRight 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      .tab-slide-left {
+        animation: tabSlideLeft 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      .tab-slide-down {
+        animation: tabSlideDown 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      .tab-leave {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .tab-leave-active {
+        transform: translateX(-20px);
+        opacity: 0;
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.3s ease;
+      }
+      #tab-bar {
+        transition: height 0.3s ease;
+        position: relative;
+      }
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .tab-fade-out {
+        animation: fadeOut 0.15s ease-out forwards;
+      }
+      .tab-fade-in {
+        animation: fadeIn 0.15s ease-out forwards;
+      }
+      .monaco-editor,
+      .monaco-editor .lines-content {
+        transition: opacity 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      }
+      .tab-transition-out .monaco-editor,
+      .tab-transition-out .monaco-editor .lines-content {
+        opacity: 0;
+      }
+      .tab-transition-in .monaco-editor,
+      .tab-transition-in .monaco-editor .lines-content {
+        opacity: 1;
+      }
+
+      /* --- Added Sidebar Styles (Theme 1) --- */
+      #backdrop {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        /* Darkened PrimaryBackground */
+        background: rgba(19, 18, 25, 0.2);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 1999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-out;
+      }
+      #backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      #sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 220px;
+        /* PrimaryBackground */
+        background: #131219;
+        /* Border */
+        border-right: 1px solid #332C40;
+        z-index: 2000;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1), background-color 0.2s ease, border-right 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+        gap: 8px;
+        font-family: "Inter", sans-serif;
+      }
+      #sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-btn {
+        background: transparent;
+        border: none;
+        /* Foreground */
+        color: #767676;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: left;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        width: 100%;
+      }
+      .sidebar-btn:hover {
+         /* ScondaryBackground */
+        background-color: #1A1821;
+         /* Lighter Foreground */
+        color: #b4b4b4;
+      }
+      .sidebar-btn:hover svg {
+         /* Lighter Foreground */
+        stroke: #b4b4b4;
+      }
+      .sidebar-btn.selected {
+         /* Border */
+        background-color: #332C40;
+         /* Lighter Foreground */
+        color: #b4b4b4;
+      }
+      .sidebar-btn.selected svg {
+         /* Lighter Foreground */
+        stroke: #b4b4b4;
+      }
+      .sidebar-btn svg {
+        width: 20px;
+        height: 20px;
+         /* Foreground */
+        stroke: #767676;
+        flex-shrink: 0;
+        transition: stroke 0.2s ease;
+      }
+
+
+      /* --- Theme 2 (Legacy) Styles --- */
+      body.theme2-active,
+      html.theme2-active {
+          background: #202020;
+          color: white;
+      }
+      body.theme2-active #tab-bar {
+          background: #202020;
+          border-bottom: 1px solid #242424;
+      }
+      body.theme2-active .tab {
+          background: #202020;
+          color: #808080;
+          border-color: transparent;
+      }
+      body.theme2-active .tab.active {
+          background: #282828;
+          color: #c5c5c5;
+          border: 1px solid #2c2c2c;
+      }
+      body.theme2-active .tab svg path {
+          stroke: #686868;
+      }
+      body.theme2-active .tab.active svg path {
+          stroke: #c5c5c5;
+      }
+      body.theme2-active #new-tab-btn {
+        color: #767676;
+      }
+      body.theme2-active #new-tab-btn:hover {
+        color: #ffffff;
+      }
+      body.theme2-active #sidebar {
+        background: #202020;
+        border-right: 1px solid #2c2c2c;
+      }
+       body.theme2-active #backdrop {
+        background: rgba(0, 0, 0, 0.2);
+      }
+      body.theme2-active .sidebar-btn {
+        color: #b0b0b0;
+      }
+      body.theme2-active .sidebar-btn:hover {
+        background-color: #2a2a2a;
+        color: #ffffff;
+      }
+      body.theme2-active .sidebar-btn:hover svg {
+        stroke: #ffffff;
+      }
+      body.theme2-active .sidebar-btn.selected {
+        background-color: #333333;
+        color: #ffffff;
+      }
+      body.theme2-active .sidebar-btn.selected svg {
+        stroke: #ffffff;
+      }
+      body.theme2-active .sidebar-btn svg {
+        stroke: #b0b0b0;
+      }
+
+    </style>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div id="main-container">
+      <div class="toast-container"></div>
+      <div id="tab-bar">
+        <div id="new-tab-btn">+</div>
+      </div>
+      <div id="container" style="width: 100%; height: 100%"></div>
+    </div>
+    
+    <div id="backdrop"></div>
+    <div id="sidebar">
+      <button class="sidebar-btn" data-nav="Home">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9.22222V21H21V9.22222L12 3L3 9.22222Z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path><path d="M9 21V12H15V21" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span>Home</span>
+      </button>
+      <button class="sidebar-btn" data-nav="Editor">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 8L3 12L7 16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 8L21 12L17 16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14 4L10 20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span>Editor</span>
+      </button>
+      <button class="sidebar-btn" data-nav="ScripHub">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 16V8C21 7.46957 20.7893 6.96086 20.4142 6.58579C20.0391 6.21071 19.5304 6 19 6H5C4.46957 6 3.96086 6.21071 3.58579 6.58579C3.21071 6.96086 3 7.46957 3 8V16C3 16.5304 3.21071 17.0391 3.58579 17.4142C3.96086 17.7893 4.46957 18 5 18H19C19.5304 18 20.0391 17.7893 20.4142 17.4142C20.7893 17.0391 21 16.5304 21 16Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 10L12 14L21 10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 6V14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span>ScripHub</span>
+      </button>
+      <button class="sidebar-btn" data-nav="Settings">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.4 15L19.4 15C19.8242 14.6543 20.1743 14.2127 20.421 13.714C20.6677 13.2153 20.8049 12.6739 20.824 12.12C20.8431 11.5661 20.7439 11.0123 20.5338 10.5056C20.3238 9.99882 20.0076 9.55169 19.6 9.2L19.6 9.2C19.2312 8.89945 18.788 8.70515 18.318 8.64333C17.848 8.58151 17.3712 8.65529 16.94 8.855C16.5088 9.05471 16.1387 9.37332 15.865 9.775C15.5913 10.1767 15.424 10.647 15.38 11.14L15.38 11.14M9.62 12.86L9.62 12.86C9.57599 13.353 9.40875 13.8233 9.13503 14.225C8.86131 14.6267 8.49122 14.9453 8.06 15.145C7.62878 15.3447 7.15199 15.4185 6.682 15.3567C6.21201 15.2949 5.76878 15.1005 5.4 14.8L5.4 14.8C5.00762 14.4483 4.6762 14.0012 4.432 13.4944C4.18781 12.9877 4.03791 12.434 3.996 11.87C3.95408 11.306 4.02213 10.7423 4.195 10.225C4.36787 9.70773 4.64092 9.24838 5 8.86L5 8.86C5.36878 8.50055 5.81201 8.30616 6.282 8.24434C6.75199 8.18252 7.22878 8.2563 7.66 8.456C8.09122 8.65571 8.46131 8.97432 8.73503 9.376C9.00875 9.77768 9.17599 10.248 9.22 10.74L9.22 10.74M12.86 15.38L12.86 15.38C13.353 15.424 13.8233 15.5913 14.225 15.865C14.6267 16.1387 14.9453 16.5088 15.145 16.94C15.3447 17.3712 15.4185 17.848 15.3567 18.318C15.2949 18.788 15.1005 19.2312 14.8 19.6L14.8 19.6C14.4483 19.9924 14.0012 20.3238 13.4944 20.568C12.9877 20.8122 12.434 20.9621 11.87 21.004C11.306 21.0459 10.7423 20.9779 10.225 20.805C9.70773 20.6321 9.24838 20.3591 8.86 20L8.86 20C8.50055 19.6312 8.30616 19.188 8.24434 18.718C8.18252 18.248 8.2563 17.7712 8.456 17.34C8.65571 16.9088 8.97432 16.5387 9.376 16.265C9.77768 15.9913 10.248 15.824 10.74 15.78L10.74 15.78M11.14 9.22L11.14 9.22C11.593 9.17599 12.0633 9.00875 12.465 8.73503C12.8667 8.46131 13.1853 8.09122 13.385 7.66C13.5847 7.22878 13.6585 6.75199 13.5967 6.282C13.5349 5.81201 13.3405 5.36878 13.04 5L13.04 5C12.6883 4.60762 12.2412 4.2762 11.7344 4.032C11.2277 3.78781 10.674 3.63791 10.11 3.596C9.54602 3.55408 8.98234 3.62213 8.46503 3.795C7.94773 3.96787 7.48838 4.24092 7.1 4.6L7.1 4.6C6.70055 4.96878 6.50616 5.41201 6.44434 5.882C6.38252 6.35199 6.4563 6.82878 6.656 7.26C6.85571 7.69122 7.17432 8.06131 7.576 8.33503C7.97768 8.60875 8.44801 8.77599 8.94 8.82L8.94 8.82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span>Settings</span>
+      </button>
+    </div>
+
+    <script src="js/luaparse.js"></script>
+    <script src="js/loader.js"></script>
+    <script type="text/javascript">
+      window.addEventListener("load", function () {
+        // --- Added Sidebar Logic ---
+        const sidebar = document.getElementById("sidebar");
+        const backdrop = document.getElementById("backdrop");
+        const sidebarButtons = document.querySelectorAll(".sidebar-btn");
+
+        window.openNav = function() { // Made global for CefSharp
+            sidebar.classList.add("open");
+            backdrop.classList.add("open");
+        }
+
+        window.closeNav = function() { // Made global for CefSharp
+            sidebar.classList.remove("open");
+            backdrop.classList.remove("open");
+            // Deselect all buttons when closing
+            sidebarButtons.forEach(btn => btn.classList.remove("selected"));
+        }
+        
+        // --- FIXED: Removed WebView2 message listener ---
+        // C# will call openNav() and closeNav() directly using ExecuteScriptAsync
+        // The 'window.chrome.webview.addEventListener' is for WebView2 and will not work in CefSharp.
+        
+        // Handle sidebar button clicks
+        sidebarButtons.forEach(button => {
+            button.addEventListener("click", (event) => {
+                // Remove selected from all
+                sidebarButtons.forEach(btn => btn.classList.remove("selected"));
+                
+                // Add selected to clicked button
+                const clickedButton = event.currentTarget;
+                clickedButton.classList.add("selected");
+                
+                const navItem = clickedButton.dataset.nav;
+                
+                // --- FIXED: Send message to C# using CefSharp.PostMessage ---
+                if (window.CefSharp && CefSharp.PostMessage) {
+                    CefSharp.PostMessage({ type: 'navClick', item: navItem });
+                }
+                
+                // Close the sidebar after a short delay for visual feedback
+                setTimeout(closeNav, 200); 
+            });
+        });
+
+        // Close nav when clicking the backdrop
+        backdrop.addEventListener("click", closeNav);
+        // --- End of Added Sidebar Logic ---
+      });
+      var tabCount = 0,
+        tabs = [],
+        activeTab = null,
+        autoSaveEnabled = true;
+      class Tab {
+        constructor() {
+          this.id = `tab-${Date.now()}`;
+          tabCount++;
+          this.number = tabCount;
+            this.name = `Untitled Tab`;
+            this.content = "local hello = \"skibidi\"\nprint(\"sigma \"..hello)\n\n-- GOOFY AHHH SCRIPT :SKULL:\n\nif hello:lower() == \"skibidi\" then\n    print(\"true sigma moment\")\nelse\n    print(\"false skid energy\")\nend\n\nprint(\"length is \"..string.len(hello))\n\nlocal t = {hello}\ntable.insert(t, \"sunc is cool ig\")\ntable.insert(t, \"pulsery is so udd\")\ntable.insert(t, \"chat im so udd\")\nfor i,v in ipairs(t) do\n    print(\"thing \"..i..\" is \"..v)\nend\n\nlocal r = math.random(1,50)\nprint(\"random number for zero reason \"..r)\n\nlocal co = coroutine.create(function()\n    print(\"coroutine just vibing\")\nend)\ncoroutine.resume(co)\n\ntask.delay(0.2, function()\n    print(\"delayed for no reason but ok\")\nend)\n\nlocal ok,res = pcall(function()\n    return \"pcall works ig\"\nend)\nprint(ok,res)\n\nprint(typeof(hello))\n\nprint(hello:lower())\n\nprint(\"done ig\")\n\n---------------------------------------------------------\n-- goofy test funcs below\n---------------------------------------------------------\n\nlocal function runtest(name, fn)\n    local ok, err = pcall(fn)\n    if ok then\n        print(name..\" works ig\")\n    else\n        print(name..\" failed ig \"..err)\n    end\nend\n\nruntest(\"cloneref\", function()\n    local part = Instance.new(\"Part\")\n    local clone = cloneref(part)\n    assert(part ~= clone, \"clone not same ig\")\n    clone.Name = \"test\"\n    assert(part.Name == \"test\", \"clone should update original ig\")\nend)\n\nruntest(\"checkcaller\", function()\n    assert(checkcaller(), \"main scope true ig\")\nend)\n\nruntest(\"clonefunction\", function()\n    local function testfn()\n        return \"success\"\n    end\n    local copy = clonefunction(testfn)\n    assert(testfn() == copy(), \"clone return match ig\")\n    assert(testfn ~= copy, \"not same ig\")\nend)\n\nruntest(\"getcallingscript\", function()\n    -- nothing required but still testing ig\nend)\n\nruntest(\"getscriptclosure\", function()\n    local module = game:GetService(\"CoreGui\").RobloxGui.Modules.Common.Constants\n    local constants = getrenv().require(module)\n    local generated = getscriptclosure(module)()\n    assert(constants ~= generated, \"should not match original ig\")\n    assert(shallowEqual(constants, generated), \"tables shallow equal ig\")\nend)\n\nruntest(\"hookfunction\", function()\n    local function testfn()\n        return true\n    end\n    local ref = hookfunction(testfn, function()\n        return false\n    end)\n    assert(testfn() == false, \"hooked false ig\")\n    assert(ref() == true, \"original true ig\")\n    assert(testfn ~= ref, \"not same ig\")\nend)\n\nruntest(\"iscclosure\", function()\n    assert(iscclosure(print) == true, \"print is c closure ig\")\n    assert(iscclosure(function() end) == false, \"executor not c ig\")\nend)\n\nruntest(\"islclosure\", function()\n    assert(islclosure(print) == false, \"print not lua ig\")\n    assert(islclosure(function() end) == true, \"lua closure ig\")\nend)\n\nruntest(\"loadstring\", function()\n    local animate = game:GetService(\"Players\").LocalPlayer.Character.Animate\n    local bytecode = getscriptbytecode(animate)\n    local func = loadstring(bytecode)\n    assert(type(func) ~= \"function\", \"luau bytecode not loadable ig\")\n    assert(assert(loadstring(\"return ... + 1\"))(1) == 2, \"math works ig\")\n    assert(type(select(2, loadstring(\"f\"))) == \"string\", \"compiler err returns smth\")\nend)\n";
+          this.element = this.createTabElement();
+        }
+        createTabElement() {
+          const tabElement = document.createElement("div");
+          tabElement.className = "tab tab-enter-animate";
+          tabElement.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="360 38 14 15">
+              <path d="M367.75 39.875V42.375C367.75 42.5408 367.816 42.6997 367.933 42.8169C368.05 42.9342 368.209 43 368.375 43H370.875 M369.625 51.125H363.375C363.043 51.125 362.726 50.9933 362.491 50.7589C362.257 50.5245 362.125 50.2065 362.125 49.875V41.125C362.125 40.7935 362.257 40.4755 362.491 40.2411C362.726 40.0067 363.043 39.875 363.375 39.875H367.75L370.875 43V49.875C370.875 50.2065 370.743 50.5245 370.509 50.7589C370.274 50.9933 369.957 51.125 369.625 51.125Z M365.25 46.125L364.625 47.375L365.25 48.625 M367.75 46.125L368.375 47.375L367.75 48.625" stroke="#C5C5C5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="tab-name">${this.name}</span>
+            <span class="tab-close">×</span>
+          `;
+          setTimeout(() => {
+            tabElement.classList.remove("tab-enter-animate");
+          }, 250);
+          const startRenameProcess = () => {
+            const nameElement = tabElement.querySelector(".tab-name");
+            if (nameElement.tagName === "INPUT") return;
+            const inputElement = document.createElement("input");
+            inputElement.value = this.name;
+            inputElement.style.cssText =
+              "width:80px;background:transparent;border:none;color:#fff;outline:none;font-family:Segoe UI;font-weight:600";
+            nameElement.replaceWith(inputElement);
+            inputElement.focus();
+            inputElement.select();
+            const finishRenaming = () => {
+              this.name = inputElement.value || "Untitled";
+              const newNameElement = document.createElement("span");
+              newNameElement.className = "tab-name";
+              newNameElement.textContent = this.name;
+              inputElement.replaceWith(newNameElement);
+              newNameElement.addEventListener("dblclick", startRenameProcess);
+            };
+            inputElement.addEventListener("blur", finishRenaming);
+            inputElement.addEventListener("keydown", (event) => {
+              if (event.key === "Enter") finishRenaming();
+              if (event.key === "Escape") {
+                inputElement.value = this.name;
+                finishRenaming();
+              }
+            });
+          };
+          tabElement.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+            document
+              .querySelectorAll(".context-menu")
+              .forEach((menu) => menu.remove());
+            const contextMenu = document.createElement("div");
+            contextMenu.className = "context-menu";
+            contextMenu.innerHTML = `
+              <div class="menu-item rename-item">Rename</div>
+              <div class="menu-item close-item">Close</div>
+            `;
+            contextMenu.style.position = "fixed";
+            contextMenu.style.left = `${event.clientX}px`;
+            contextMenu.style.top = `${event.clientY}px`;
+            document.body.appendChild(contextMenu);
+            contextMenu
+              .querySelector(".rename-item")
+              .addEventListener("click", () => {
+                startRenameProcess();
+                contextMenu.remove();
+              });
+            contextMenu
+              .querySelector(".close-item")
+              .addEventListener("click", () => {
+                if (tabCount > 1) {
+                  closeTab(this);
+                  tabCount = tabCount - 1;
+                }
+                contextMenu.remove();
+              });
+            const closeMenu = () => {
+              contextMenu.remove();
+              document.removeEventListener("click", closeMenu);
+            };
+            document.addEventListener("click", closeMenu);
+          });
+          tabElement.addEventListener("click", (e) => {
+            if (!e.target.classList.contains("tab-close")) {
+              activateTab(this);
+            }
+          });
+          tabElement
+            .querySelector(".tab-close")
+            .addEventListener("click", (event) => {
+              event.stopPropagation();
+              if (tabCount > 1) {
+                closeTab(this);
+                tabCount = tabCount - 1;
+              }
+            });
+          tabElement
+            .querySelector(".tab-name")
+            .addEventListener("dblclick", startRenameProcess);
+          return tabElement;
+        }
+        animateTabMove(targetElement) {
+          return new Promise((resolve) => {
+            this.element.classList.add("moving");
+            setTimeout(() => {
+              this.element.classList.remove("moving");
+              resolve();
+            }, 300);
+          });
+        }
+      }
+      function createNewTab() {
+        const tab = new Tab();
+        tabs.push(tab);
+        const tabBar = document.getElementById("tab-bar");
+        const newTabBtn = document.getElementById("new-tab-btn");
+        tabBar.insertBefore(tab.element, newTabBtn);
+        activateTab(tab);
+      }
+      function closeTab(tab) {
+        if (tabs.length <= 1) return;
+        tab.element.classList.add("tab-close-animate");
+        setTimeout(() => {
+          const tabIndex = tabs.indexOf(tab);
+          if (tabIndex > -1) {
+            tabs.splice(tabIndex, 1);
+            tab.element.remove();
+            if (tab === activeTab) {
+              activeTab = null;
+              if (tabs.length > 0) {
+                const nextTab = tabs[Math.max(0, tabIndex - 1)];
+                activateTab(nextTab);
+              } else {
+                editor.setValue("");
+              }
+            }
+          }
+        }, 250);
+      }
+      function activateTab(tab) {
+        if (activeTab === tab) return;
+        const editorContainer = document.getElementById("container");
+        if (activeTab) {
+          activeTab.element.classList.remove("active");
+          activeTab.content = editor.getValue();
+          editorContainer.classList.add("tab-transition-out");
+        }
+        setTimeout(() => {
+          if (activeTab) {
+            editorContainer.classList.remove("tab-transition-out");
+          }
+          activeTab = tab;
+          tab.element.classList.add("active");
+          editor.setValue(tab.content);
+          editorContainer.classList.add("tab-transition-in");
+          setTimeout(() => {
+            editorContainer.classList.remove("tab-transition-in");
+          }, 200);
+        }, 200);
+      }
+      require.config({
+        paths: {
+          vs: "vs",
+        },
+      });
+      var GetText;
+      var SetText;
+      var SetTheme;
+      var ToggleTheme; // Added for theme toggle
+      var SetScroll;
+      var ShowError;
+      var Refresh;
+      var SwitchMinimap;
+      var SwitchReadonly;
+      var SwitchRenderWhitespace;
+      var SwitchLinks;
+      var SwitchLineHeight;
+      var SwitchFontSize;
+      var SwitchFolding;
+      var SwitchAutoIndent;
+      var SwitchFontFamily;
+      var SwitchFontLigatures;
+      var AddIntellisense;
+      var editor;
+      var Proposals = [];
+      require(["vs/editor/editor.main"], function () {
+        function getDependencyProposals() {
+          let newProposals = [];
+          for (let index = 0; index < Proposals.length; index++) {
+            const element = Proposals[index];
+            let newElement = {};
+            for (const key in element) {
+              if (key == "__children__") {
+                continue;
+              }
+              newElement[key] = element[key];
+            }
+            newProposals.push(newElement);
+          }
+          return newProposals;
+        }
+
+        monaco.editor.defineTheme("theme1", {
+          base: "vs-dark",
+          inherit: true,
+          rules: [
+            { token: "keyword", foreground: "#9a7edb" }, // purply vibe
+            { token: "string", foreground: "#767676" },
+            { token: "number", foreground: "#767676" },
+            { token: "comment", foreground: "#4a4a4a" },
+            { token: "variable", foreground: "#767676" },
+            { token: "entity.name.function", foreground: "#767676" },
+          ],
+          colors: {
+            "editor.background": "#131219", // PrimaryBackground
+            "editor.foreground": "#767676", // Foreground
+            "editorLineNumber.foreground": "#332C40", // Border
+            "editorLineNumber.activeForeground": "#767676", // Foreground
+            "editor.lineHighlightBackground": "#1A1821", // SecondaryBackground
+            "editor.lineHighlightBorder": "#332C40", // Border
+            "editorIndentGuide.background": "#1A1821", // SecondaryBackground
+            "editorIndentGuide.activeBackground": "#332C40", // Border
+            "editorCursor.foreground": "#767676", // Foreground
+            "editor.selectionBackground": "#332C40", // Border
+            "editor.selectionHighlightBackground": "#332C40",
+            "editor.wordHighlightBackground": "#1A1821",
+            "editor.wordHighlightStrongBackground": "#1A1821",
+            "editor.findMatchBackground": "#332C40",
+            "editor.findMatchHighlightBackground": "#1A1821",
+            "editorSuggestWidget.background": "#1A1821", // SecondaryBackground
+            "editorSuggestWidget.border": "#332C40", // Border
+            "editorSuggestWidget.foreground": "#767676", // Foreground
+            "editorSuggestWidget.selectedBackground": "#332C40", // Border
+            "editorSuggestWidget.highlightForeground": "#b4b4b4",
+            "editorBracketHighlight.foreground1": "#767676",
+            "editorBracketHighlight.foreground2": "#767676",
+            "editorBracketHighlight.foreground3": "#767676",
+            "editorGutter.background": "#131219", // PrimaryBackground
+            "scrollbarSlider.background": "#1A1821", // SecondaryBackground
+            "scrollbarSlider.hoverBackground": "#332C40", // Border
+            "scrollbarSlider.activeBackground": "#332C40", // Border
+            "minimap.background": "#131219", // PrimaryBackground
+            "minimap.selectionHighlight": "#332C40",
+          },
+        });
+
+
+        // --- RENAMED THEME 2 (LEGACY) ---
+        monaco.editor.defineTheme("theme2", { // Renamed from "Strace"
+          base: "vs-dark",
+          inherit: true,
+          rules: [
+            // Keywords and control flow in purple/blue
+            { token: "keyword", foreground: "#C586C0", fontStyle: "bold" },
+            {
+              token: "keyword.control",
+              foreground: "#C586C0",
+              fontStyle: "bold",
+            },
+            { token: "keyword.operator", foreground: "#C586C0" },
+            {
+              token: "keyword.local",
+              foreground: "#C586C0",
+              fontStyle: "bold",
+            },
+            {
+              token: "keyword.other",
+              foreground: "#C586C0",
+              fontStyle: "bold",
+            },
+            // Functions in yellow
+            {
+              token: "entity.name.function",
+              foreground: "#DCDCAA",
+              fontStyle: "bold",
+            },
+            {
+              token: "support.function",
+              foreground: "#DCDCAA",
+              fontStyle: "bold",
+            },
+            {
+              token: "support.function.library",
+              foreground: "#DCDCAA",
+              fontStyle: "bold",
+            },
+            { token: "function", foreground: "#DCDCAA", fontStyle: "bold" },
+            { token: "function.call", foreground: "#DCDCAA" },
+            // Variables in light blue
+            { token: "variable", foreground: "#9CDCFE" },
+            {
+              token: "variable.language.self",
+              foreground: "#569CD6",
+              fontStyle: "bold",
+            },
+            { token: "variable.parameter.function", foreground: "#9CDCFE" },
+            { token: "variable.other.constant", foreground: "#4FC1FF" },
+            { token: "variable.property", foreground: "#9CDCFE" },
+            { token: "variable.object.property", foreground: "#9CDCFE" },
+            // Strings in orange/salmon
+            { token: "string", foreground: "#CE9178" },
+            {
+              token: "string.escape",
+              foreground: "#D7BA7D",
+              fontStyle: "bold",
+            },
+            // Numbers in light green
+            { token: "number", foreground: "#B5CEA8", fontStyle: "bold" },
+            {
+              token: "constant.language",
+              foreground: "#569CD6",
+              fontStyle: "bold",
+            },
+            { token: "constants", foreground: "#4FC1FF", fontStyle: "bold" },
+            // Types and storage in cyan/blue
+            { token: "storage.type", foreground: "#569CD6", fontStyle: "bold" },
+            {
+              token: "entity.name.type.alias",
+              foreground: "#4EC9B0",
+              fontStyle: "bold",
+            },
+            { token: "support.type", foreground: "#4EC9B0", fontStyle: "bold" },
+            { token: "type", foreground: "#4EC9B0", fontStyle: "bold" },
+            // Delimiters and punctuation in soft white
+            { token: "delimiter", foreground: "#D4D4D4" },
+            { token: "delimiter.bracket", foreground: "#D4D4D4" },
+            { token: "delimiter.array", foreground: "#D4D4D4" },
+            { token: "delimiter.parenthesis", foreground: "#D4D4D4" },
+            // Punctuation
+            { token: "punctuation.separator.arguments", foreground: "#D4D4D4" },
+            { token: "punctuation.separator.parameter", foreground: "#D4D4D4" },
+            { token: "punctuation.definition.block", foreground: "#D4D4D4" },
+            {
+              token: "punctuation.definition.parameters",
+              foreground: "#D4D4D4",
+            },
+            { token: "comment", foreground: "#404439" },
+            {
+              token: "comment.highlight.title",
+              foreground: "#42473b",
+              fontStyle: "italic",
+            },
+          ],
+          colors: {
+            "editor.background": "#00000000",
+            "editor.foreground": "#ffffff",
+            "editorLineNumber.foreground": "#3a3a3a",
+            "editorLineNumber.activeForeground": "#ffffff",
+            "editor.lineHighlightBackground": "#00000000",
+            "editor.lineHighlightBorder": "#232323",
+            "editorIndentGuide.background": "#252525",
+            "editorIndentGuide.activeBackground": "#ffffff50",
+            "editorCursor.foreground": "#ffffff",
+            "editor.selectionBackground": "#ffffff30",
+            "editor.selectionHighlightBackground": "#ffffff20",
+            "editor.wordHighlightBackground": "#ffffff18",
+            "editor.wordHighlightStrongBackground": "#ffffff25",
+            "editor.findMatchBackground": "#ffffff35",
+            "editor.findMatchHighlightBackground": "#ffffff20",
+            "editorSuggestWidget.background": "#212121",
+            "editorSuggestWidget.border": "#2a2a2a",
+            "editorSuggestWidget.foreground": "#ffffff",
+            "editorSuggestWidget.selectedBackground": "#ffffff25",
+            "editorSuggestWidget.highlightForeground": "#ffffff",
+            "editorBracketHighlight.foreground1": "#ffffff",
+            "editorBracketHighlight.foreground2": "#ffffff",
+            "editorBracketHighlight.foreground3": "#ffffff",
+            "editorGutter.background": "#00000000",
+            "editorGutter.modifiedBackground": "#ffffff50",
+            "editorGutter.addedBackground": "#ffffff30",
+            "editorGutter.deletedBackground": "#ffffff30",
+            "scrollbarSlider.background": "#ffffff20",
+            "scrollbarSlider.hoverBackground": "#ffffff30",
+            "scrollbarSlider.activeBackground": "#ffffff40",
+            "minimap.background": "#222222",
+            "minimap.selectionHighlight": "#ffffff40",
+          },
+        });
+require(["vs/basic-languages/monaco.contribution"], function () {
+          monaco.languages.registerCompletionItemProvider("lua", {
+            provideCompletionItems: function (model, position) {
+              return {
+                suggestions: getDependencyProposals(),
+              };
+            },
+            triggerCharacters: [".", ":", '"'],
+          });
+          editor = monaco.editor.create(document.getElementById("container"), {
+            value:
+              "",
+            language: "lua",
+            theme: "theme1", // --- SET DEFAULT THEME ---
+            folding: true,
+            dragAndDrop: true,
+            links: true,
+            minimap: {
+              enabled: true,
+            },
+            showFoldingControls: "always",
+            smoothScrolling: true,
+            stopRenderingLineAfter: 6500,
+            fontSize: 12,
+            fontFamily: "cascadia mono",
+            cursorBlinking: "smooth",
+            cursorSmoothCaretAnimation: true,
+            foldingHighlight: false,
+            fontLigatures: true,
+            formatOnPaste: true,
+            showDeprecated: true,
+            suggest: {
+              snippetsPreventQuickSuggestions: false,
+              maxVisibleSuggestions: 12,
+            },
+            lineNumbersMinChars: 4,
+          });
+          editor.getModel().updateOptions({ insertSpaces: false });
+
+          const debouncedCheck = debounce(validateLuaCode, 400);
+
+          editor.onDidChangeModelContent(() => {
+            debouncedCheck();
+          });
+
+          setTimeout(validateLuaCode, 500); // initial check
+
+        });
+        document
+          .getElementById("new-tab-btn")
+          .addEventListener("click", createNewTab);
+        createNewTab();
+        window.onresize = function () {
+          editor.layout();
+        };
+        Cut = function () {
+          editor.focus();
+          document.execCommand("cut");
+        };
+        Copy = function () {
+          editor.focus();
+          document.execCommand("copy");
+        };
+        Paste = function () {
+          editor.focus();
+          document.execCommand("paste");
+        };
+        Undo = function () {
+          editor.focus();
+          document.execCommand("undo");
+        };
+        Redo = function () {
+          editor.focus();
+          document.execCommand("redo");
+        };
+        Delete = function () {
+          editor.focus();
+          document.execCommand("delete");
+        };
+        SelectAll = function () {
+          editor.focus();
+          document.execCommand("selectAll");
+        };
+        GetText = function () {
+          return editor.getValue();
+        };
+        SetText = function (x) {
+          editor.setValue(x);
+        };
+        GetProposals = function () {
+          return Proposals;
+        };
+        OnDidChangeContent = function (callback) {
+          return editor.onDidChangeModelContent((event) => {
+            callback(editor.getValue());
+          });
+        };
+        OnDidChangeCursorPosition = function (callback) {
+          return editor.onDidChangeCursorPosition((event) => {
+            callback(event.position);
+          });
+        };
+        
+        // --- REFACTORED AND DEBOUNCED THEME SYSTEM ---
+
+        let lastToggleTime = 0;
+        const TOGGLE_DEBOUNCE_MS = 300; // Ignore rapid, duplicate calls from the host environment
+
+        // This function is the single source of truth for changing the theme.
+        SetTheme = function (themeName) {
+          if (themeName === "theme1") {
+            monaco.editor.setTheme("theme1");
+            document.body.classList.remove("theme2-active");
+            document.documentElement.classList.remove("theme2-active"); 
+            console.log("SetTheme: Switched to theme1 (Primary)");
+          } else if (themeName === "theme2") {
+            monaco.editor.setTheme("theme2");
+            document.body.classList.add("theme2-active");
+            document.documentElement.classList.add("theme2-active"); 
+            console.log("SetTheme: Switched to theme2 (Legacy)");
+          }
+        };
+
+        // ToggleTheme is now debounced to prevent double-execution issues from the host.
+        window.ToggleTheme = function () {
+            const now = Date.now();
+            if (now - lastToggleTime < TOGGLE_DEBOUNCE_MS) {
+                console.warn("ToggleTheme call ignored (Debounced). Host fired twice rapidly.");
+                return;
+            }
+            lastToggleTime = now;
+            
+            // Check the current state and flip it
+            const isTheme2 = document.body.classList.contains("theme2-active");
+            
+            if (isTheme2) {
+                SetTheme("theme1"); // Switch to theme 1
+            } else {
+                SetTheme("theme2"); // Switch to theme 2
+            }
+        };
+
+        // --- END REFACTORED AND DEBOUNCED THEME SYSTEM ---
+
+        
+        SwitchMinimap = function (flag) {
+          editor.updateOptions({
+            minimap: {
+              enabled: flag,
+            },
+          });
+        };
+        SwitchReadonly = function (flag) {
+          editor.updateOptions({
+            readOnly: flag,
+          });
+        };
+        SwitchRenderWhitespace = function (op) {
+          editor.updateOptions({
+            renderWhitespace: op,
+          });
+        };
+        SwitchLinks = function (flag) {
+          editor.updateOptions({
+            links: flag,
+          });
+        };
+        SwitchLineHeight = function (num) {
+          editor.updateOptions({
+            lineHeight: num,
+          });
+        };
+        SwitchFontSize = function (num) {
+          editor.updateOptions({
+            fontSize: num,
+          });
+        };
+        SwitchFolding = function (flag) {
+          editor.updateOptions({
+            folding: flag,
+          });
+        };
+        SwitchAutoIndent = function (flag) {
+          editor.updateOptions({
+            autoIndent: flag,
+          });
+        };
+        SwitchFontFamily = function (name) {
+          editor.updateOptions({
+            fontFamily: name,
+          });
+        };
+        SwitchFontLigatures = function (flag) {
+          editor.updateOptions({
+            fontLigatures: flag,
+          });
+        };
+        AddSnippet = function (kindName, snippetName, data) {
+          let snippet = {
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            kind: monaco.languages.CompletionItemKind[kindName],
+          };
+          for (const key in data) {
+            let value = data[key];
+            if (key == "__children__") {
+              continue;
+            }
+            snippet[key] = value;
+          }
+          if (!snippet.label) {
+            snippet.label = snippetName;
+          }
+          if (!snippet.insertText) {
+            snippet.insertText = snippetName;
+          }
+          Proposals.push(snippet);
+        };
+        AddRawSnippet = function (data) {
+          Proposals.push(data);
+        };
+        SetScroll = function (line) {
+          editor.revealLineInCenter({ lineNumber: line });
+        };
+        Refresh = function () {
+          var Text = GetText();
+          SetText(Text);
+          editor.trigger("keyboard", "type", { text: Text });
+        };
+        AddIntellisense = function (l, k, d, i) {
+          console.log(l);
+          console.log(k);
+          console.log(d);
+          console.log(i);
+          var t;
+          switch (k) {
+            case "Class":
+              t = monaco.languages.CompletionItemKind.Class;
+              break;
+            case "Color":
+              t = monaco.languages.CompletionItemKind.Color;
+              break;
+            case "Constructor":
+              t = monaco.languages.CompletionItemKind.Constructor;
+              break;
+            case "Enum":
+              t = monaco.languages.CompletionItemKind.Enum;
+              break;
+            case "Field":
+              t = monaco.languages.CompletionItemKind.Field;
+              break;
+            case "File":
+              t = monaco.languages.CompletionItemKind.File;
+              break;
+            case "Folder":
+              t = monaco.languages.CompletionItemKind.Folder;
+              break;
+            case "Function":
+              t = monaco.languages.CompletionItemKind.Function;
+              break;
+            case "Interface":
+              t = monaco.languages.CompletionItemKind.Interface;
+              break;
+            case "Keyword":
+              t = monaco.languages.CompletionItemKind.Keyword;
+              break;
+            case "Method":
+              t = monaco.languages.CompletionItemKind.Method;
+              break;
+            case "Module":
+              t = monaco.languages.CompletionItemKind.Module;
+              break;
+            case "Property":
+              t = monaco.languages.CompletionItemKind.Property;
+              break;
+            case "Reference":
+              t = monaco.languages.CompletionItemKind.Reference;
+              break;
+            case "Snippet":
+              t = monaco.languages.CompletionItemKind.Snippet;
+              break;
+            case "Text":
+              t = monaco.languages.CompletionItemKind.Text;
+              break;
+            case "Unit":
+              t = monaco.languages.CompletionItemKind.Unit;
+              break;
+            case "Value":
+              t = monaco.languages.CompletionItemKind.Value;
+              break;
+            case "Variable":
+              t = monaco.languages.CompletionItemKind.Variable;
+              break;
+          }
+          document.getElementsByClassName(
+            "lines-content monaco-editor-background"
+          )[0].style.backgroundImage =
+            "url(https://c.tenor.com/StDUfEak8SkAAAAC/tenor.gif)";
+          document.getElementsByClassName("margin")[0].style.backgroundImage =
+            "url(https://c.tenor.com/StDUfEak8SkAAAAC/tenor.gif)";
+          Proposals.push({
+            label: l,
+            kind: t,
+            detail: d,
+            insertText: i,
+          });
+          console.log(Proposals);
+        };
+      });
+
+    function showPersistentToast(message, type, codePreview = null) {
+      const container = document.querySelector(".toast-container");
+      let existingToast = container.querySelector(".toast");
+      if (!existingToast) {
+        existingToast = document.createElement("div");
+        existingToast.className = `toast ${type} show`;
+        container.appendChild(existingToast);
+      }
+
+      existingToast.innerHTML = `
+        <div class="toast-title">${message}</div>
+        ${codePreview ? `<pre class="toast-code">${codePreview}</pre>` : ""}
+      `;
+    }
+
+
+    function clearPersistentToast() {
+      const container = document.querySelector(".toast-container");
+      const toast = container.querySelector(".toast");
+      if (toast) {
+        toast.remove();
+      }
+    }
+
+    function debounce(fn, wait) {
+      let t = null;
+      return function () {
+        const args = arguments;
+        clearTimeout(t);
+        t = setTimeout(function () {
+          fn.apply(null, args);
+        }, wait);
+      };
+    }
+
+    function validateLuaCode() {
+      const model = editor.getModel();
+      if (!model) return;
+
+      const code = model.getValue();
+      let markers = [];
+
+      try {
+        luaparse.parse(code, {
+          wait: false,
+          comments: false,
+          locations: true
+        });
+      } catch (err) {
+        if (err && err.line) {
+          const lineContent = model.getLineContent(err.line);
+          markers.push({
+            severity: monaco.MarkerSeverity.Error,
+            message: err.message,
+            startLineNumber: err.line,
+            startColumn: err.column || 1,
+            endLineNumber: err.line,
+            endColumn: (err.column || 1) + 1
+          });
+
+          const errorTitle = `Syntax Error at line ${err.line}, col ${err.column || 1}: ${err.message}`;
+          const preview = lineContent.trim().slice(0, 80);
+
+          // --- FIXED: Use CefSharp.PostMessage ---
+          if (window.CefSharp && CefSharp.PostMessage) {
+            CefSharp.PostMessage({
+              type: "luaError",
+              title: errorTitle,
+              preview: preview
+            });
+          }
+        }
+      }
+
+      monaco.editor.setModelMarkers(model, "luaparse", markers);
+
+
+      if (markers.length === 0) {
+        // --- FIXED: Use CefSharp.PostMessage ---
+        if (window.CefSharp && CefSharp.PostMessage) {
+            CefSharp.PostMessage({
+              type: "clearErrors"
+            });
+        }
+      }
+    }
+    </script>
+
+   <script src="js/script.js"></script>
+  
+
+</body></html>
